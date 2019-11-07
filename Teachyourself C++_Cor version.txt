@@ -1,0 +1,83 @@
+20191106
+
+
+
+p.273
+
+A stream is a logical device that either produces or consumes information.
+
+When a C++ program begins, these four streams are automatically opened:
+
+cin		Standard input			Keyboard
+cout		Standard output		Screen
+cerr		Standard error			Screen
+clog		Buffered version of cerr	Screen
+
+
+
+p.274
+
+The I/O classes begin with a system of template classes.
+a template class defines the form of a class without fully specifying the data upon which it will operate.
+Once a template class has been defined, specific instances of it can be created.
+
+The C++ I/O system is built upon two related, but different, template class hierarchies. The first is derived from the low-level I/O class called basic_streambuf. This class supplies the basic, low-level input and output operations and provides the underlying support for the entire C++ I/O system.
+
+The class hierarchy that you will most commonly be working with is derived from basic_ios.
+This is a high-level I/O class that provides formatting, error-checking, and status information related to stream I/O.
+
+
+p.346
+
+Polymorphism is supported by C++ in two ways.
+First, it is supported at compile time, through the use of overloaded operators and functions.
+Second, it is supported at run time, through the use of virtual functions.
+
+p.347
+
+A pointer declared as a pointer to a base class can also be used to point to any class derived from that base.
+
+
+base *p;
+
+base base_ob;
+derived derived_ob;
+
+p = &baes_ob;
+
+p = &derived_ob;\
+
+
+
+a base pointer can point to an object of any class derived from that base without generating a type mismatch error.
+
+Although you can use a base pointer to point to a derived object, you can access only those members of the derived object that were inherited from the base.
+This is because the base pointer has knowledge only of the base class. It knows nothing about the members added by the derived class.
+
+And a pointer of the derived type cannot be used to access an object of the base class.
+
+
+A virtual function is a member function that is declared within a base class and redefined by a derived class. To create a virtual function, precede the function’s declaration with the keyword virtual. When a class containing a virtual function is inherited, the derived class redefines the virtual function relative to the derived class.
+In essence, virtual functions implement the “one interface, multiple methods” philosophy that underlies polymorphism. The virtual function within the base class defines the form of the interface to that function. Each redefinition of the virtual function by a derived class implements its operation as it relates specifically to the derived class. That is, the redefinition creates a specific method. When a virtual function is redefined by a derived class, the keyword virtual is not needed.
+
+A virtual function can be called just like any other member function. However, what makes a virtual function interesting-and capable of supporting run-time polymorphism-is what happens when a virtual function is called through a pointer. ~ C++ determines which version of that function will be executed based upon the type of object being pointed to by the pointer. And, this determination is made at run time. Put differently, it is the type of the object pointed to at the time when the call occurs that determines which version of the virtual function will be executed. 
+
+p.351
+
+First, an overloaded function must differ in type and/ or number of parameters, while a redefined virtual function must have precisely the same type and number of parameters and the same return type. (In fact, if you change either the number or type of parameters when redefining a virtual function, it simply becomes an overloaded function and its virtual nature is lost.) Further, virtual functions must be class members. This is not the case for overloaded functions. Also, while destructor functions can be virtual, constructors cannot. Because of the difference between overloaded function and redefined virtual functions, the term overriding is used to describe virtual function redefinition.
+
+
+
+
+20191107
+
+
+
+p.352
+
+
+The key points to understand from the preceding example are that the type of the object being pointed to determines which version of an overridden virtual function will be executed when accessed via a base class pointer, and that this decision is made at run time.
+
+derived에서 base의 virtual function이 오버라이딩 되어있지 않으면 그냥 base function 갖다 씀
+
+
