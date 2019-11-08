@@ -67,8 +67,6 @@ p.351
 First, an overloaded function must differ in type and/ or number of parameters, while a redefined virtual function must have precisely the same type and number of parameters and the same return type. (In fact, if you change either the number or type of parameters when redefining a virtual function, it simply becomes an overloaded function and its virtual nature is lost.) Further, virtual functions must be class members. This is not the case for overloaded functions. Also, while destructor functions can be virtual, constructors cannot. Because of the difference between overloaded function and redefined virtual functions, the term overriding is used to describe virtual function redefinition.
 
 
-
-
 20191107
 
 
@@ -80,4 +78,40 @@ The key points to understand from the preceding example are that the type of the
 
 derived에서 base의 virtual function이 오버라이딩 되어있지 않으면 그냥 base function 갖다 씀
 
+
+20191108
+
+
+
+p.358
+When there is no meaningful action for a base class virtual function to perform, the implication is that any derived class must override this function.
+To ensure that this will occur, C++ supports pure virtual functions.
+
+virtual type func_name(parameter-list) = 0;
+
+When a virtual function is made pure, it forces any derived class to override it.
+If a derived class does not, a compile-time error results.
+
+When a class contains at least one pure virtual function, it is referred to as an abstract class. Since an abstract class contains at least one function for which no body exists, it is, technically, an incomplete type, and no objects of that class can be created.
+Thus, abstract classes exist only to be inherited.
+
+you can still create a pointer to an abstract class, since it is through the use of base class pointers that run-time polymorphism is achieved.
+
+(it is also permissible to have a reference to an abstract class)
+
+
+
+This means that when a derived class inherits a virtual function from a base class and then the derived class is used as a base for yet another derived class, the virtual function can be overridden by the final derived class (as well as the first derived class). 
+p.362
+Polymorphism is the process by which a common interface is applied to two or more similar(but technically different) situations, thus implementing the “one interface, multiple methods” philosophy.
+Polymorphism is important because it can greatly simplify complex systems.
+
+Early binding and Late binding
+
+Early binding essentially refers to those events that can be known at compile time. Specifically, it refers to those function calls that can be resolved during compilation. Early bound entities include “normal” functions, overloaded functions, and nonvirtual member and friend functions.
+When these types of functions are compiled, all address information necessary to call them is known at compile time.
+The main advantage of early binding is that it is very efficient.
+The main disadvantage is lack of flexibility.
+
+Late binding refers to events that must occur at run time. A late bound function call is one in which the address of the function to be called is not known until the program runs.
 
