@@ -115,3 +115,19 @@ The main disadvantage is lack of flexibility.
 
 Late binding refers to events that must occur at run time. A late bound function call is one in which the address of the function to be called is not known until the program runs.
 
+20191109
+
+
+
+p.380
+generic class를 쓰면 동일한 메커니즘 / 알고리즘을 쓰는 뭐...연결 리스트라던가, 큐라던가 하는 형태를 type에 상관없이 손쉽게 쓸 수 있음.
+
+template <class Ttype> class class-name { }
+
+Here Ttype is the placeholder type name that will be specified when a class is initiated. If necessary, you can define more than one generic data type by using a comma-seperated list.
+
+Once you have created a generic class, you create a specific instance of that class by using the following general form:
+
+class-name <type> ob;
+
+
