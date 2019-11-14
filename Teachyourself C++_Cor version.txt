@@ -131,3 +131,181 @@ Once you have created a generic class, you create a specific instance of that cl
 class-name <type> ob;
 
 
+20191113
+
+
+
+One very good use for catch(...) is as the last catch of a cluster of catches.
+In this capacity it provides a useful default or “catch all” statement.
+
+
+#include <iostream>
+using namespace std;
+ 
+void Xhandler(int test) throw(int, char, double)
+{
+ if(test == 0) throw test;
+ if(test == 1) throw 'a';
+ if(test == 2) throw 123.23;
+}
+ 
+int main()
+{
+ cout << "start" << endl;
+ 
+ try {
+   Xhandler(0);
+ } catch(int i) {
+   cout << "Caught int" << endl;
+ } catch(char c) {
+   cout << "Caught char" << endl;
+ } catch(double d) {
+   cout << "Caught double" << endl;
+ }
+ 
+ cout << "end";
+ 
+ return 0;
+}
+
+In this program, the function Xhandler() can throw only integer, character, and double exceptions.
+p.399
+
+As you have learned, you can rethrow an exception. The most likely reason for doing so is to allow multiple handlers access to the exception.
+For example, perhaps one exception handler manages one aspect of an exception and a second handler copes with another.
+An exception can only be rethrown from within a catch block(or from any function called from within that block). 
+When you rethrow an exception, it will not be recaught by the same catch statement.
+
+p.401
+Finally, it was decided that a new failure will generate an exception by default, but that a null pointer could be returned instead, as an option.
+
+In standard C++, when an allocation request cannot be honored, new throws a bad-alloc exception. … To have access to this exception, you must include the header <new> in your program.
+
+
+
+In Standard C++ it is also possible to have new return null instead of throwing an exception when an allocation failure occurs. This form of new is most useful when you are compiling older code with a modern C++ compiler.
+
+p_var = new(northrow) type;
+
+
+20191114
+
+
+
+p.412
+When typeid is applied to a reference to a polymorphic base class, the type returned is that of the actual object being referred to.
+The circumstance in which you will most often make use of this feature is when objects are passed to functions by reference.
+
+#include <iostream>
+#include <typeinfo>
+using namespace std;
+ 
+class BaseClass {
+ virtual void f() {};
+};
+ 
+class Derived1 : public BaseClass {
+ 
+};
+ 
+class Derived2 : public BaseClass {
+ 
+};
+ 
+void WhatType(BaseClass &ob)
+{
+ cout << "ob is referencing an object of type ";
+ cout << typeid(ob).name() << endl;
+}
+ 
+int main()
+{
+ int i;
+ BaseClass baseob;
+ Derived1 ob1;
+ Derived2 ob2;
+ 
+ WhatType(baseob);
+ WhatType(ob1);
+ WhatType(ob2);
+ 
+ return 0;
+}
+
+
+Output :::
+ob is referencing an object of type 9BaseClass
+ob is referencing an object of type 8Derived1
+ob is referencing an object of type 8Derived2
+Often all you need to know is whether the type of one object matches that of another.
+Since the type_info object returned by typeid overloads the == and != operators, this too is easy to accomplish.
+
+#include <iostream>
+#include <typeinfo>
+using namespace std;
+ 
+class X {
+ virtual void f() {}
+};
+ 
+class Y {
+ virtual void f() {}
+};
+ 
+int main()
+{
+ X x1, x2;
+ Y y1;
+ 
+ if(typeid(x1) == typeid(x2))
+   cout << "x1 and x2 are some types" << endl;
+ else
+   cout << "x1 and x2 are different types" << endl;
+ 
+ if(typeid(x1) != typeid(y1)) cout << "x1 and y1 are different types" << endl;
+ else cout << "x1 and y1 are same types" << endl;
+ 
+ return 0;
+}
+
+p.414
+
+The program defines a simple class hierarchy that draws shapes on the screen.
+Since objects are generated randomly, there is no way to know in advance what type of object will be created next.
+
+
+
+
+p.417
+
+The typeid operator can be applied to template classes.
+
+
+
+
+p.420
+
+Although C++ still fully supports the traditional casting operator defined by C, C++ adds four new ones. They are dynamic_cast, const_cast, reinterpret_cast, and static_cast. 
+The dynamic_cast operator performs a run-time cast that verifies the validity of a cast.
+If, at the time dynamic_cast is executed, the cast is invalid, the cast fails.
+
+dynamic_cast<target-type> (expr)
+
+The target type must be a pointer or reference type, and the expression being cast must evaluate to a pointer or reference.
+
+Thus, dynamic_cast can be used to cast one type of pointer into another or one type of reference into another.
+
+The purpose of dynamic_cast is to perform casts on polymorphic types.
+Given the two polymorphic classes B and D, with D derived from B, a dynamic_cast can always cast a D* pointer into an B* pointer. This is because a base pointer can always point to a derived pointer.
+But a dynamic_cast can cast a B* pointer into an D* pointer only if the object being pointed to actually is a D object.
+// 이게 대체 뭔 뜻이야
+D -(inherit)-> B임?
+이건 봐야 알겠는데
+
+
+In general, dynamic_cast will succeed if the pointer(or reference) being cast is a pointer(or reference) to either an object of the target type or an object derived from the target type.
+Otherwise, the cast will fail.
+If the cast fails, dynamic_cast evaluates to null if the cast involves pointer.
+If a dynamic_cast on reference types fails, a bad_cast exception is thrown.
+
+
