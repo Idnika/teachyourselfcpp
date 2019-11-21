@@ -307,5 +307,177 @@ In general, dynamic_cast will succeed if the pointer(or reference) being cast is
 Otherwise, the cast will fail.
 If the cast fails, dynamic_cast evaluates to null if the cast involves pointer.
 If a dynamic_cast on reference types fails, a bad_cast exception is thrown.
+20191115
 
+
+
+p.422
+
+컴파일한 결과는 다음과 같으며 당연히 기초클래스의 객체를 가리킨 유도클래스의 포인터 변수는
+유도클래스의 멤버함수인 freightWeight 값을 가지고 있지 않기 때문에 쓰레기값이 출력되는 것이다.
+애초에 이러한 캐스팅은 말이 안되는 것인데 그 이유는 유도클래스의 객체를 생성하지도 않았는데,
+유도클래스의 포인터 변수로 기초클래스의 객체를 가리키는 것이 아무 의미가 없기 때문이다.
+따라서 이 코드는 보지 않고 그 위의 다운캐스팅을 보기로 한다.
+
+다운캐스팅은 보통 쓰이지 않는데, 그 이유는 업캐스팅된 포인터변수를 다시 다운 캐스팅하면 원래대로 돌아오는 것과
+다를게 없기 때문이다. 따라서 dynamic_cast를 통해서 이런 점을 제어할 수 있다.
+메인함수만 수정해서 이 연산자를 확인해보도록 하자.
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+int main(void)
+{
+    Car *pcar1 = new Truck(80, 200);
+    Truck *ptruck1 = dynamic_cast<Truck*>(pcar1); // 다운캐스팅 : 컴파일에러
+    ptruck1->ShowTruckState();
+ 
+    std::cout << std::endl;
+ 
+    Truck *ptruck2 = new Truck(90, 300);
+    Car *pcar2 = dynamic_cast<Car*>(ptruck2); // 업캐스팅 : 컴파일성공
+ 
+ 
+    return 0;
+}
+Colored by Color Scripter
+cs
+
+위 코드를 통해 dynamic_cast는 업캐스팅은 허용하지만 다운캐스팅은 허용하지 않는다는 것을 알 수 있다.
+그렇지만 dynamic_cast로 다운캐스팅을 허용하는 방법이 있는데 바로 기초클래스가 polymorphic class 인 경우이다.
+다형성이 적용된 클래스로 하나 이상의 가상함수(virtual function)을 가지는 클래스를 말한다.
+이는 RTTI(Runtime Type Information)를 가지기 때문에 다운캐스팅을 할 수 있는 것이다.
+ RTTI는 런타임시 캐스팅하는 dynamic_cast에게 객체의 정보를 제공해주는 것을 말한다. 
+다운캐스팅 할 때 이 위의 코드 처럼  pcar1에 할당된 객체의 주소가 기초클래스의 것이었다면 쓰레기값이 도출되므로
+굉장히 위험한 코드이다. 따라서 RTTI를 통해 dynamic_cast를 사용할 수 있는 것이다.
+
+꽤 복잡하고 이해하기가 어렵다. 아직 dynamic_cast가 런타임시 동작하는 원리나 RTTI에 대해 정확히는 모르겠다.
+어쨌든 polymorphic class에서만 dynamic_cast를 통한 다운캐스팅이 허용된다는 것 정도를 일단 알아두자.
+다음 링크들을 통해서 dynamic_cast의 속도 저하 문제와 RTTI에 대해서 확인할 수 있다.
+
+
+
+https://sexycoder.tistory.com/15
+(casting 에 관하여)
+p.429
+
+In general, these casting operators provide a safer, more explicit means of performing certain type conversions than that provided by the C-style cast.
+
+The const-cast operator is used to explicitly override const and/ or volatile in a cast.
+20191120
+
+
+
+The const-cast operator is used to explicitly override const and/or volatile in a cast.
+The most common use of const-cast is to remove const-ness.
+
+The static-cast operator performs a non-polymorphic cast.
+
+The re-interpret_cast operator changes one pointer type into another, funcamentally different, pointer type. (like pointer to integer, integer to pinter.)
+
+A reinterpret_cast should be used for casting inherently incompatible pointer types.
+
+
+
+p.437
+The purpose of the namespace is to localize the names of identifiers to avoid name collisions.
+
+p.438
+Identifier declared within a namespace can be referred to directly within that namespace. ~ However, since namespace defines a scope, you need to use the scope resolution operator to refer to objects declared within a namespace from outside that namespace. For example, to assign the value 10 to i from code outside MyNameSpace, you must use this statement:
+
+MyNamesSpace::i = 10;
+
+Or, to declare an object of type myclass from outside MyNameSpace, you use a statement like this:
+
+MyNameSpace::myclass ob;
+
+~
+
+As you can imagine, if your program includes frequent references to the members of a namespace, the need to specify the namespace and the scope resolution operator each time you need to refer to one quickly becomes a tedious chore.
+20191121
+
+
+p.455
+
+Class member functions can be declared as const. When this is done, that function cannot modify the object that invokes it. Also, a const object cannot invoke a non-const member function.
+
+However, a const member function can be called by either const or non-const objects.
+
+Sometimes there will be one or more members of a class that you want a const function to be able to modify even though you don’t want the function to be able to modify any of its other members.
+You can accomplish this through the use of mutable, which overrides const-ness.
+
+This is, a mutable member can be modified by a const member function.
+
+
+
+
+#include <iostream>
+using namespace std;
+ 
+class Demo {
+ int i;
+public:
+ int geti() const {
+   return i;
+ }
+ void seti(int x) const {
+   i = x;
+ }
+}
+
+
+p.457
+
+This program wil not compile because seti() is declared as const. This means that it is not allowed to modify the invoking object.
+Since it attemps to change i, the program is in error.
+
+
+p.460
+The reason for this is that whenever you create a constructor that takes one argument, you are also implicitly creating a conversion from the type of that argument to the type of the class.
+
+If you do not want implicit conversions to be made, you can prevent them by using explicit.
+The explicit specifier applies only to constructors.
+
+
+
+p.461
+
+The automatic conversion from the type of a constructor’s first argument into a call to the constructor itelf has interesting implications.
+
+p.463
+
+C++ provides two important mechanisms that make it easier to link C++ to other languages.
+One is the linkage specifier, which tells the compiler that one or more functions in your C++ program will be linked with another language that might have a different approach to naming, parameter passing, stack restoration, and the like.
+
+The scond is the asm keyword, which allows you to embed assembly language instructions in your C++ source code.
+
+
+
+
+463~465 나중에 필요할 때
+
+
+
+
+p.466
+
+In addition to console and file I/O, C++ supports a full set of functions that use character arrays as the input or output device.
+Although C++’s array-based I/O parallels, in concept, the array-based I/O found in C, C++’s array-based I/O is more flexible and useful because it allows user-defined types to be integrated to into it.
+
+
+
+p.474
+
+The STL was not part of the original specifiaction for C++ but was added during the standardization proceedings.
 
